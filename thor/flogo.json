@@ -1,0 +1,339 @@
+{
+    "imports": [
+        "github.com/project-flogo/flow",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/activity/log",
+        "github.com/project-flogo/contrib/activity/actreturn",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/activity/mapper",
+        "github.com/project-flogo/flow/activity/subflow",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/trigger/rest",
+        "github.com/project-flogo/contrib/function/coerce",
+        "github.com/project-flogo/contrib/function/string",
+        "github.com/project-flogo/contrib/function/array"
+    ],
+    "name": "thor",
+    "description": "",
+    "version": "1.0.0",
+    "type": "flogo:app",
+    "appModel": "1.1.1",
+    "triggers": [
+        {
+            "ref": "#rest",
+            "name": "tibco-wi-rest",
+            "description": "Simple REST Trigger",
+            "settings": {
+                "port": 9999,
+                "APISpecUpdate": false,
+                "swagger": "",
+                "secureConnection": false,
+                "serverKey": "",
+                "caCertificate": ""
+            },
+            "id": "ReceiveHTTPMessage",
+            "handlers": [
+                {
+                    "description": "",
+                    "settings": {
+                        "Method": "POST",
+                        "Path": "/post/{id}",
+                        "OutputValidation": false
+                    },
+                    "action": {
+                        "ref": "github.com/project-flogo/flow",
+                        "settings": {
+                            "flowURI": "res://flow:Main_flow_machineA"
+                        },
+                        "input": {
+                            "pathParams": "=$.pathParams",
+                            "headers": "=$.headers",
+                            "body": "=$.body"
+                        },
+                        "output": {
+                            "data": "=$.data"
+                        }
+                    },
+                    "reply": {
+                        "code": 200,
+                        "configureResponseCodes": false,
+                        "message": {}
+                    },
+                    "schemas": {
+                        "reply": {
+                            "data": {
+                                "type": "json",
+                                "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"post\":{\"type\":\"string\"}}}",
+                                "fe_metadata": "{\n    \"post\":\"\"\n}"
+                            },
+                            "responseBody": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}",
+                                "fe_metadata": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}"
+                            }
+                        },
+                        "output": {
+                            "pathParams": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[]}",
+                                "fe_metadata": "[{\"parameterName\":\"id\",\"type\":\"string\"}]"
+                            },
+                            "headers": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}",
+                                "fe_metadata": "[{\"parameterName\":\"Accept\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Charset\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Encoding\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Type\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Length\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Connection\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Cookie\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Pragma\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false}]"
+                            },
+                            "body": {
+                                "type": "json",
+                                "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"post\":{\"type\":\"string\"}}}",
+                                "fe_metadata": "{\n    \"post\":\"\"\n}"
+                            }
+                        }
+                    },
+                    "name": "Main_flow_machineA"
+                }
+            ]
+        }
+    ],
+    "resources": [
+        {
+            "id": "flow:subflow",
+            "data": {
+                "name": "subflow",
+                "description": "",
+                "links": [
+                    {
+                        "id": 1,
+                        "from": "LogMessage",
+                        "to": "LogMessage1",
+                        "type": "default"
+                    },
+                    {
+                        "id": 2,
+                        "from": "LogMessage1",
+                        "to": "Return",
+                        "type": "default"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "id": "LogMessage",
+                        "name": "LogMessage",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false,
+                                "message": "Subflowlog1"
+                            }
+                        }
+                    },
+                    {
+                        "id": "LogMessage1",
+                        "name": "LogMessage1",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false,
+                                "message": "=string.concat(\"Count value : \", coerce.toString($flow.count))"
+                            }
+                        }
+                    },
+                    {
+                        "id": "Return",
+                        "name": "Return",
+                        "description": "Simple Return Activity",
+                        "activity": {
+                            "ref": "#actreturn",
+                            "settings": {
+                                "mappings": {
+                                    "output": "My output"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [
+                        {
+                            "name": "count",
+                            "type": "float64"
+                        }
+                    ],
+                    "output": [
+                        {
+                            "name": "output",
+                            "type": "string"
+                        }
+                    ],
+                    "fe_metadata": {
+                        "input": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"number\"}}}",
+                        "output": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"output\":{\"type\":\"string\"}}}"
+                    }
+                }
+            }
+        },
+        {
+            "id": "flow:Main_flow_machineA",
+            "data": {
+                "name": "Main flow_machineA",
+                "description": "",
+                "links": [
+                    {
+                        "id": 1,
+                        "from": "Mapper",
+                        "to": "StartaSubFlow",
+                        "type": "default"
+                    },
+                    {
+                        "id": 2,
+                        "from": "StartaSubFlow",
+                        "to": "Return",
+                        "type": "default"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "id": "Mapper",
+                        "name": "Mapper",
+                        "description": "Mapper Activity",
+                        "activity": {
+                            "ref": "#mapper",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "Customer": [
+                                            {
+                                                "ID": 1,
+                                                "CustomerName": "=$flow.body.post"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"Customer\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"ID\":{\"type\":\"number\"},\"CustomerName\":{\"type\":\"string\"},\"Contact\":{\"type\":\"object\",\"properties\":{\"PersonName\":{\"type\":\"object\",\"properties\":{\"Prefix\":{\"type\":\"string\"},\"First\":{\"type\":\"string\"},\"Middle\":{\"type\":\"string\"},\"Last\":{\"type\":\"string\"},\"Suffix\":{\"type\":\"string\"}}},\"Phone\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"Address\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"AddressType\":{\"type\":\"string\"},\"Street1\":{\"type\":\"string\"},\"Street2\":{\"type\":\"string\"},\"Street3\":{\"type\":\"string\"},\"City\":{\"type\":\"string\"},\"State\":{\"type\":\"string\"},\"PostalCode\":{\"type\":\"string\"},\"Country\":{\"type\":\"string\"},\"ModifiedDateTIme\":{\"type\":\"string\"}}}}}},\"ModifiedDateTIme\":{\"type\":\"string\"}},\"required\":[\"ID\",\"CustomerName\",\"Contact\",\"ModifiedDateTIme\"]}}}}",
+                                        "fe_metadata": "{\n  \"Customer\": [\n    {\n      \"ID\": 222,\n      \"CustomerName\": \"PQR\",\n      \"Contact\": {\n        \"PersonName\": {\n          \"Prefix\": \"Mr\",\n          \"First\": \"Vivek\",\n          \"Middle\": \"R\",\n          \"Last\": \"Randive\",\n          \"Suffix\": \"Dr\"\n        },\n        \"Phone\": \"123-456-7890\",\n        \"email\": \"abc@pqr.com\",\n        \"Address\": [\n          {\n            \"AddressType\": \"Main Office\",\n            \"Street1\": \"3303 HillView Avenue\",\n            \"Street2\": \"Near VMware\",\n            \"Street3\": \"Page Mill Road\",\n            \"City\": \"Palo Alto\",\n            \"State\": \"California\",\n            \"PostalCode\": \"41014\",\n            \"Country\": \"USA\",\n            \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n          }\n        ]\n      },\n      \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n    },\n    {\n      \"ID\": 111,\n      \"CustomerName\": \"ABC\",\n      \"Contact\": {\n        \"PersonName\": {\n          \"Prefix\": \"Mr\",\n          \"First\": \"Steve\",\n          \"Middle\": \"Paul\",\n          \"Last\": \"Jobs\",\n          \"Suffix\": \"Dr\"\n        },\n        \"Phone\": \"123-456-7890\",\n        \"email\": \"abc@pqr.com\",\n        \"Address\": [\n          {\n            \"AddressType\": \"Main Office\",\n            \"Street1\": \"3303 HillView Avenue\",\n            \"Street2\": \"Near VMware\",\n            \"Street3\": \"Page Mill Road\",\n            \"City\": \"Palo Alto\",\n            \"State\": \"California\",\n            \"PostalCode\": \"41014\",\n            \"Country\": \"USA\",\n            \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n          }\n        ]\n      },\n      \"ModifiedDateTIme\": \"2012-12-12T12:12:12Z\"\n    }\n  ]\n}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"Customer\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"ID\":{\"type\":\"number\"},\"CustomerName\":{\"type\":\"string\"},\"Contact\":{\"type\":\"object\",\"properties\":{\"PersonName\":{\"type\":\"object\",\"properties\":{\"Prefix\":{\"type\":\"string\"},\"First\":{\"type\":\"string\"},\"Middle\":{\"type\":\"string\"},\"Last\":{\"type\":\"string\"},\"Suffix\":{\"type\":\"string\"}}},\"Phone\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"Address\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"AddressType\":{\"type\":\"string\"},\"Street1\":{\"type\":\"string\"},\"Street2\":{\"type\":\"string\"},\"Street3\":{\"type\":\"string\"},\"City\":{\"type\":\"string\"},\"State\":{\"type\":\"string\"},\"PostalCode\":{\"type\":\"string\"},\"Country\":{\"type\":\"string\"},\"ModifiedDateTIme\":{\"type\":\"string\"}}}}}},\"ModifiedDateTIme\":{\"type\":\"string\"}},\"required\":[\"ID\",\"CustomerName\",\"Contact\",\"ModifiedDateTIme\"]}}}}",
+                                        "fe_metadata": "{\n  \"Customer\": [\n    {\n      \"ID\": 222,\n      \"CustomerName\": \"PQR\",\n      \"Contact\": {\n        \"PersonName\": {\n          \"Prefix\": \"Mr\",\n          \"First\": \"Vivek\",\n          \"Middle\": \"R\",\n          \"Last\": \"Randive\",\n          \"Suffix\": \"Dr\"\n        },\n        \"Phone\": \"123-456-7890\",\n        \"email\": \"abc@pqr.com\",\n        \"Address\": [\n          {\n            \"AddressType\": \"Main Office\",\n            \"Street1\": \"3303 HillView Avenue\",\n            \"Street2\": \"Near VMware\",\n            \"Street3\": \"Page Mill Road\",\n            \"City\": \"Palo Alto\",\n            \"State\": \"California\",\n            \"PostalCode\": \"41014\",\n            \"Country\": \"USA\",\n            \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n          }\n        ]\n      },\n      \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n    },\n    {\n      \"ID\": 111,\n      \"CustomerName\": \"ABC\",\n      \"Contact\": {\n        \"PersonName\": {\n          \"Prefix\": \"Mr\",\n          \"First\": \"Steve\",\n          \"Middle\": \"Paul\",\n          \"Last\": \"Jobs\",\n          \"Suffix\": \"Dr\"\n        },\n        \"Phone\": \"123-456-7890\",\n        \"email\": \"abc@pqr.com\",\n        \"Address\": [\n          {\n            \"AddressType\": \"Main Office\",\n            \"Street1\": \"3303 HillView Avenue\",\n            \"Street2\": \"Near VMware\",\n            \"Street3\": \"Page Mill Road\",\n            \"City\": \"Palo Alto\",\n            \"State\": \"California\",\n            \"PostalCode\": \"41014\",\n            \"Country\": \"USA\",\n            \"ModifiedDateTIme\": \"2012-12-13T12:12:12Z\"\n          }\n        ]\n      },\n      \"ModifiedDateTIme\": \"2012-12-12T12:12:12Z\"\n    }\n  ]\n}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "StartaSubFlow",
+                        "name": "StartaSubFlow",
+                        "description": "Simple SubFlow Activity",
+                        "type": "iterator",
+                        "settings": {
+                            "iterate": 6,
+                            "accumulate": true
+                        },
+                        "activity": {
+                            "ref": "#subflow",
+                            "settings": {
+                                "flowURI": "res://flow:subflow"
+                            },
+                            "input": {
+                                "count": "=$iteration[value]"
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"number\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"number\"}}}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"output\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"output\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Return",
+                        "name": "Return",
+                        "description": "Simple Return Activity",
+                        "activity": {
+                            "ref": "#actreturn",
+                            "settings": {
+                                "mappings": {
+                                    "code": 200,
+                                    "data": {
+                                        "mapping": {
+                                            "post": "=$activity[StartaSubFlow][0].output"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [
+                        {
+                            "name": "pathParams",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"id\":{\"type\":\"string\"}}"
+                            }
+                        },
+                        {
+                            "name": "headers",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}}"
+                            }
+                        },
+                        {
+                            "name": "body",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"post\":{\"type\":\"string\"}}"
+                            }
+                        }
+                    ],
+                    "output": [
+                        {
+                            "name": "code",
+                            "type": "integer"
+                        },
+                        {
+                            "name": "data",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"post\":{\"type\":\"string\"}}"
+                            }
+                        }
+                    ],
+                    "fe_metadata": {
+                        "input": "{\"type\":\"object\",\"title\":\"ReceiveHTTPMessage\",\"properties\":{\"pathParams\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[]},\"headers\":{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]},\"body\":{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"post\":{\"type\":\"string\"}}}}}",
+                        "output": "{\"type\":\"object\",\"title\":\"Inputs\",\"properties\":{\"code\":{\"type\":\"integer\",\"required\":false},\"data\":{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"post\":{\"type\":\"string\"}}}},\"required\":[]}"
+                    }
+                },
+                "explicitReply": true
+            }
+        }
+    ],
+    "properties": [],
+    "connections": {},
+    "id": "1594798432125"
+}
