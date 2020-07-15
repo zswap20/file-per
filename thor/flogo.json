@@ -40,7 +40,7 @@
                     "action": {
                         "ref": "github.com/project-flogo/flow",
                         "settings": {
-                            "flowURI": "res://flow:Main_flow_machineA"
+                            "flowURI": "res://flow:Main_flow_machineB"
                         },
                         "input": {
                             "pathParams": "=$.pathParams",
@@ -87,7 +87,7 @@
                             }
                         }
                     },
-                    "name": "Main_flow_machineA"
+                    "name": "Main_flow_machineB"
                 }
             ]
         }
@@ -174,9 +174,9 @@
             }
         },
         {
-            "id": "flow:Main_flow_machineA",
+            "id": "flow:Main_flow_machineB",
             "data": {
-                "name": "Main flow_machineA",
+                "name": "Main flow_machineB",
                 "description": "",
                 "links": [
                     {
@@ -204,7 +204,7 @@
                                     "mapping": {
                                         "Customer": [
                                             {
-                                                "ID": 1,
+                                                "ID": 112,
                                                 "CustomerName": "=$flow.body.post"
                                             }
                                         ]
