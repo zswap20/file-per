@@ -148,7 +148,7 @@
                             "input": {
                                 "Log Level": "INFO",
                                 "flowInfo": false,
-                                "message": "Subflowlog1_machineA"
+                                "message": "Subflowlog1_machineB"
                             }
                         }
                     },
