@@ -114,6 +114,21 @@
                         }
                     },
                     "name": "machineA"
+                },
+                {
+                    "description": "new flow by machine b",
+                    "settings": {
+                        "Repeating": false,
+                        "Time Interval": 1,
+                        "Interval Unit": "Second"
+                    },
+                    "action": {
+                        "ref": "github.com/project-flogo/flow",
+                        "settings": {
+                            "flowURI": "res://flow:machineB"
+                        }
+                    },
+                    "name": "machineB"
                 }
             ]
         }
@@ -387,6 +402,41 @@
                                         "type": "json",
                                         "value": "{\"title\":\"\",\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"records\":null}}",
                                         "fe_metadata": "{\"title\":\"\",\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"records\":null}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [],
+                    "output": [],
+                    "fe_metadata": {}
+                }
+            }
+        },
+        {
+            "id": "flow:machineB",
+            "data": {
+                "name": "machineB",
+                "description": "new flow by machine b",
+                "links": [],
+                "tasks": [
+                    {
+                        "id": "AvroDeserialize",
+                        "name": "AvroDeserialize",
+                        "description": "Avro Deserialize",
+                        "activity": {
+                            "ref": "#deserialize",
+                            "input": {
+                                "Schema": "{}"
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"data\":{\"type\":\"object\",\"properties\":{\"serializeddata\":{\"type\":\"string\"}}}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"data\":{\"type\":\"object\",\"properties\":{\"serializeddata\":{\"type\":\"string\"}}}}}"
                                     }
                                 }
                             }
