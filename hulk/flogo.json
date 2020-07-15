@@ -42,7 +42,7 @@
                     "action": {
                         "ref": "github.com/project-flogo/flow",
                         "settings": {
-                            "flowURI": "res://flow:Main_flow"
+                            "flowURI": "res://flow:Main_flow_machineB"
                         },
                         "input": {
                             "pathParams": "=$.pathParams",
@@ -89,7 +89,7 @@
                             }
                         }
                     },
-                    "name": "Main_flow"
+                    "name": "Main_flow_machineB"
                 }
             ]
         },
@@ -215,9 +215,9 @@
             }
         },
         {
-            "id": "flow:Main_flow",
+            "id": "flow:Main_flow_machineB",
             "data": {
-                "name": "Main flow",
+                "name": "Main flow_machineB",
                 "description": "",
                 "links": [
                     {
